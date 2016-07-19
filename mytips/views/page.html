@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link href="/s/css/bootstrap.min.css" rel="stylesheet">
+<!--link rel="icon" href="/s/img/favicon.ico" type="image/x-icon" -->
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<title>集点</title>
+<style>
+    body{background:#f2f2f2; font-family:"Microsoft Yahei";}
+    div .inner {margin:0 5px 40px 5px;}
+    .tags .label {display:inline-block; padding-top:0; padding-bottom:0; margin-bottom: 5px; line-height:2.2em;}
+    .btn {display:inline-block; margin-bottom: 5px;}
+    .label a {color: #FFFFFF;}
+    .label a:active {color: #FFFFFF; }
+    .label a:visited {color: #FFFFFF; }
+    .label a:hover {color: #FFFFFF; }
+    .btn a {color: #FFFFFF; }
+    .btn a:active {color: #FFFFFF; }
+    .btn a:visited {color: #FFFFFF; }
+    .btn a:hover {color: #FFFFFF; }
+    blockquote {border-left: solid #C0C0C0; font-size: 1.1em;}
+</style>
+</head>
+
+<body>
+
+<header class="navbar-inverse navbar-static-top bs-docs-nav" id="top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="../" class="navbar-brand">集点</a>
+    </div>
+    <nav id="bs-navbar" class="collapse navbar-collapse navbar-right">
+      <ul class="nav navbar-nav">
+        % if user:
+            <li><a href="#" class="gn_name"><em class="S_txt1">欢迎您: {{user.name}}</em></a></li>
+            <li><a href="/signout" class="gn_name"><em class="S_txt1">退出</em></a></li>
+        % else:
+            <li><a href="/signin" class="gn_name"><em class="S_txt1">微博登录</em></a></li>
+        % end
+      </ul>
+    </nav>
+  </div>
+</header>
+<div class="container main">
+	<h1 class="page-header">装修知识收集</h1>
+	<div class="row">
+        <div class="col-lg-9 col-md-9">
+            % if user:
+            <div class="inner form-holder">
+                <form id='addtip' action='/addtip' method='POST'>
+                    <div class="form-group input">
+                        <textarea class="W_input form-control" title="便签输入框" name="tip" id="tip" rows="5"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control W_input" id='tags' name='tags' placeholder="输入标签，空格相隔">
+                    </div>
+                    <button type="submit" class="btn btn-primary">发布</button>
+                </form>
+            </div>
+            % end
+
+            % for post in posts:
+            <div class="inner">
+                <div class="highlight">
+                    <blockquote>
+                        {{post.post_text}}
+                    </blockquote>
+                </div>
+                <div class="tags" data-example-id="label-variants">
+                % if not posts_tags.has_key(post.id):
+                    <span class="label label-primary"><a href="javascript:void(0);" >未加标签</a></span>
+                % else:
+                    % for tid in posts_tags[post.id]:
+                    <span class="label label-primary"><a href="/tag/{{tid}}" >{{tags[tid]}}</a></span>
+                    % end
+                % end
+                <span class="label label-danger"><a id='deltip_link' href="/deltip/{{post.id}}" onclick="return confirm('确实要删除么？');">删除此贴</a></span>
+                </div>
+            </div>
+            % end
+
+            % if last > 1:
+            <div class="inner">
+                <nav>
+                  <ul class="pagination">
+                    <li><a href="{{cururl}}?page=1&num={{num}}">第一页</a></li>
+                    % if page > 1:
+                    % prev = page - 1
+                    <li><a href="{{cururl}}?page={{prev}}&num={{num}}">上一页</a></li>
+                    % end
+                    % if page < last:
+                    % next = page + 1
+                    <li><a href="{{cururl}}?page={{next}}&num={{num}}">下一页</a></li>
+                    % end
+                    <li><a href="{{cururl}}?page={{last}}&num={{num}}">最终页</a></li>
+                  </ul>
+                </nav>
+            </div>
+            % end
+        </div>
+        <div class="col-lg-3 col-md-3 btn-group-verticle">
+            % for tag in alltags:
+            <button class="btn btn-primary" type="button"><a href="/tag/{{tag[0]}}">
+              {{tag[1]}}</a><span class="badge">{{tag[2]}}</span>
+            </button>
+            % end
+        </div>
+	</div>
+</div>
+
+</body>
+
+</html>
