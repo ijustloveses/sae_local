@@ -10,5 +10,5 @@ Please Notes:
 - index.wsgi rename to server.py
     + app = Bottle()  ==>  app = default_app()
     + don't connect Sina OpenAuth anymore, use my nickname always.
-    + modify /sigin, /signout, /callback functions accordingly.
+    + modify /sigin, /callback functions accordingly, and remove _create_client function
     + run server by: run(host='0.0.0.0', port=80, reloader=False) 

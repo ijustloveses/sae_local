@@ -1,0 +1,140 @@
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,minimum-scale=1" />
+  <title>我的收藏</title>
+  <link href="/s/css/frame.css" type="text/css" rel="stylesheet" charset="utf-8" />
+  <link id="skin_style" href="/s/css/skin.css" type="text/css" rel="stylesheet" charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="/s/css/comb_WB_feed.css" id="FM_14204301752006" />
+
+ </head>
+
+% import json
+ <body class="B_index">
+  <div class="WB_miniblog">
+   <div class="WB_miniblog_fb">
+    <div class="WB_main clearfix" id="plc_frame">
+     <div class="WB_frame">
+      <div class="WB_main_l" fixed-box="true"></div>
+      <div id="plc_main">
+       <div class="WB_main_c">
+        <div id="v6_pl_content_myfavoriteslist">
+         <div node-type="favContent">
+          <div class="WB_feed" node-type="feed_list">
+
+          % for post in posts:
+           <div class="WB_cardwrap WB_feed_type S_bg2" id="{{post.id}}">
+            <div class="WB_feed_detail clearfix">
+             <div class="WB_face W_fl">
+              <div class="face">
+               <a target="_blank" class="W_face_radius" href="{{post.url}}" title="{{post.screen_name}}"><img title="{{post.screen_name}}" alt="" width="50" height="50" src="{{post.profile_image_url}}" class="W_face_radius" /></a>
+              </div>
+             </div>
+             <div class="WB_detail">
+              <div class="WB_info">
+               <a target="_blank" id="{{post.user_id}}" class="W_f14 W_fb S_txt1" title="{{post.screen_name}}" href="{{post.profile_url}}"> {{post.screen_name}}</a>
+              </div>
+              <div class="WB_text W_f14">
+               {{post.post_text}}
+              </div>
+              % if post.pic_urls != '' and len(json.loads(post.pic_urls)) > 0:
+              <div class="WB_media_wrap clearfix">
+               <div class="media_box">
+                <div>
+                 <ul class="WB_media_a WB_media_a_mn clearfix">
+                  % urls = json.loads(post.pic_urls)
+                  % for url in urls:
+                  <li class="WB_pic S_bg2 bigcursor"> <img class="bigcursor" src="{{url['thumbnail_pic']}}" /> </li>
+                  % end
+                 </ul>
+                </div>
+               </div>
+              </div>
+              % end
+
+              % if post.re_id != '':
+              <div class="WB_feed_expand" id="{{post.re_id}}">
+               <div class="W_arrow_bor W_arrow_bor_t">
+                <i class="S_bg1_br"></i>
+               </div>
+               <div class="WB_expand S_bg1">
+                <div class="WB_info">
+                 <a target="_blank" id="{{post.re_user_id}}" class="W_fb S_txt1" href="{{post.re_profile_url}}" title="{{post.re_screen_name}}"> @{{post.re_screen_name}}</a>
+                </div>
+                <div class="WB_text">
+                 {{post.re_post_text}}
+                </div>
+                % if post.re_pic_urls != '' and len(json.loads(post.re_pic_urls)) > 0:
+                <div class="WB_media_wrap clearfix">
+                 <div class="media_box">
+                  <div>
+                   <ul class="WB_media_a WB_media_a_mn clearfix">
+                    % urls = json.loads(post.re_pic_urls)
+                    % for url in urls:
+                    <li class="WB_pic S_bg2 bigcursor"> <img class="bigcursor" src="{{url['thumbnail_pic']}}" /> </li>
+                    % end
+                   </ul>
+                  </div>
+                 </div>
+                </div>
+                % end
+                <div class="WB_expand_media_box" style="display: none;"></div>
+                <div class="WB_func clearfix">
+                 <div class="WB_from S_txt2">
+                  <a class="S_txt2" target="_blank" title="{{post.re_created_at}}">{{post.re_created_at}}</a>
+                 </div>
+                </div>
+               </div>
+              </div>
+              % end
+
+              <div class="WB_tag clearfix S_txt2">
+               <span class="W_fr">收藏于{{post.favtime}}</span>
+               % if not posts_tags.has_key(post.id):
+               <span class="WB_tag_s" > <a href="javascript:void(0);" class="W_btn_b" action-type="fl_fav_tag">未加标签</a> </span>
+               % else:
+                % for tid in posts_tags[post.id]:
+               <span class="WB_tag_s"> <span class="b"> <span class="W_btn_b W_btn_tag"><span class="W_arrow_bor W_arrow_bor_l"><i class="S_line3"></i><em class="S_bg2_br"></em></span><a class="S_txt1" href="/tag/{{tid}}" >{{tags[tid]}}</a></span> </span>
+                % end
+               % end
+              </div>
+
+              <div class="WB_from S_txt2">
+               <a target="_blank" title="{{post.created_at}}" class="S_txt2" >{{post.created_at}}</a>
+              </div>
+             </div>
+            </div>
+            <div class="WB_feed_handle">
+             <div node-type="feed_list_repeat" class="WB_feed_repeat S_bg1" style="display:none;"></div>
+            </div>
+           </div>
+          % end
+
+          % if last > 1:
+           <div class="WB_cardwrap S_bg2">
+            <div class="W_pages">
+            <a href="{{cururl}}?page=1&num={{num}}" class="page S_txt1">第一页</a>
+            % if page > 1:
+            % prev = page - 1
+            <a href="{{cururl}}?page={{prev}}&num={{num}}" class="page next S_txt1 S_line1">上一页</a>
+            % end
+            % if page < last:
+            % next = page + 1
+            <a href="{{cururl}}?page={{next}}&num={{num}}" class="page next S_txt1 S_line1">下一页</a>
+            % end
+            <a href="{{cururl}}?page={{last}}&num={{num}}" class="page next S_txt1 S_line1">最终页</a>
+            </div>
+           </div>
+          % end
+
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

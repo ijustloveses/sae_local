@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <!-- Meta, title, CSS, favicons, etc. -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="wb:webmaster" content="c0a0b4b5bfc62fc2" />
+  <title>泡茶记录</title>
+
+  <link href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <!--[if lt IE 9]><script src="../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <style>
+  .table tbody>tr>td{
+    vertical-align: middle;
+  }
+  form {
+    margin-bottom: 10px;
+  }
+  </style>
+</head>
+  
+<body>
+  <nav class="navbar navbar-static-top navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">泡茶</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/">吃药</a></li>
+        <li><a href="/timeline">作息</a></li>		
+        <li><a href="/sleep">睡眠</a></li>
+        <li><a href="/tvlist">追剧</a></li>
+		<li class="active"><a href="#">记录</a></li>
+        <!--li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li-->
+      </ul>
+	  % if logged_in:
+      <ul class="nav navbar-nav navbar-right">
+	    <li><a href="#">欢迎您: {{user.name}}</a></li>
+	    <li><a href="/signout">退出</a></li>
+	  </ul>	  
+	  % else:
+      <ul class="nav navbar-nav navbar-right">
+	    <li><a href="/signin">微薄登录</a></li>
+	  </ul>
+	  % end
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+  </nav>
+
+  <div class="container">
+    % if logged_in:
+    <div class="row">
+      <div class=".col-md-12">
+        <h1>记录集</h1>
+	    <form class="form-inline" action='/pwadd' method='POST'>
+          <div class="form-group">
+            <label class="sr-only" for="project">项目</label>
+            <input type="text" class="form-control" id="project" name="project" placeholder="输入项目">
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="idno">身份</label>
+            <input type="text" class="form-control" id="idno" name="idno" placeholder="输入身份">
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="passwd">记录</label>
+            <input type="text" class="form-control" id="passwd" name="passwd" placeholder="输入记录">
+          </div>
+          <button type="submit" class="btn btn-default">添加</button>
+        </form>
+	  </div>
+    </div>
+  
+    <div class="row">
+      <div class=".col-md-12">
+        % if passwds:
+        <table class="table table-striped">
+          <tbody>
+		      % for pw in passwds:
+              <tr data-pwid="{{pw.id}}">
+                <td>{{pw.project}}</td>
+                <td>{{pw.idno}}</td>
+                <td>{{pw.passwd}}</td>
+                <td>
+		          <a class='btn btn-mini btn-danger' href='/pwdel/{{pw.id}}' onclick="confirm('将要删除本记录，是否确认？'); return true;">删除</a>
+                </td>
+              </tr>
+			  % end
+          </tbody>
+        </table>
+	    % end
+	  </div>
+    </div>
+	% end
+  </div>
+  
+<script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>  
+</body>
+</html>
