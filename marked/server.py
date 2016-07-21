@@ -17,9 +17,7 @@
 #######################
 
 from bottle import Bottle, route, run, template, static_file, install, mako_view, request, get, post, response, default_app, view, debug, redirect
-import sae
-from weibo import APIError, APIClient
-import time, json, base64, hashlib, time
+import time, json, base64, hashlib
 import dbutils
 
 _MIN_POST_ID = 3803238748759186  # 上次导入最大的ID，就是本次导入的最小起始ID
