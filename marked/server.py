@@ -1,6 +1,7 @@
 # encoding=utf-8
 
 from bottle import Bottle, route, run, template, static_file, install, mako_view, request, get, post, response, default_app, view, debug, redirect
+from weibo import APIClient
 import time, base64, hashlib
 import dbutils
 
@@ -37,6 +38,16 @@ def hello(tid):
     return {'posts': posts, 'posts_tags': posts_tags, 'tags': tags, 'page': page, 'last': last, 'num': num, 'cururl': '/tag/%s' % tid}
 
 
+@app.route('/getauthinfo')
+@view('hello.html')
+def hello():
+    u = _check_cookie()
+    if not u:
+        redirect('/signin')
+
+    return {'page_title': u'Auth Information', 'token': u.auth_token, 'expired': u.expired_time}
+
+
 @app.route('/s/css/:filename')
 def server_css(filename):
     return static_file(filename, root='assets/css')
@@ -54,20 +65,30 @@ def server_images(filename):
 
 @app.route('/signin')
 def server_static():
-    redirect('/callback')
+    client = _create_client()
+    redirect(client.get_authorize_url())
 
 
 @app.route('/callback')
 def callback():
-    uid = '1'
-    access_token = 'access_token'
-    expires_in = int(time.mktime(time.localtime())) + 3600
+    code = request.params['code'] # request.query.code is for ver 1.3
+    client = _create_client()
+    r = client.request_access_token(code)
 
-    user = {'id': uid, 'name': u'泡茶', 'auth_token': access_token, 'expired_time': expires_in}
+    access_token, expires_in, uid = r.access_token, r.expires_in, r.uid
+    client.set_access_token(access_token, expires_in)
+
+    u = client.users.show.get(uid=uid)
+    user = {'id': uid,'name': u.screen_name, 'auth_token': access_token, 'expired_time':expires_in}
+
     dbutils.insertOrUpdateUser(user, ['id'])
 
     _make_cookie(uid, access_token, expires_in)
     redirect('/getlist')
+
+
+def _create_client():
+    return APIClient(_APP_ID, _APP_SECRET, 'http://marked.sinaapp.com/callback')
 
 
 _COOKIE = 'authuser'
@@ -96,13 +117,6 @@ def _check_cookie():
     if md5 != hashlib.md5(s).hexdigest():
         return None
     return user
-
-
-# intime like 'Tue Jan 06 03:16:04 +0800 2015'
-def time2timestamp(intime):
-    # like 'Tue Jan 06 03:16:04 2015'
-    intime = intime[0:-10] + intime[-4:]
-    return time.mktime(time.strptime(intime, "%a %b %d %H:%M:%S %Y"))
 
 
 def pager(totalnum):
