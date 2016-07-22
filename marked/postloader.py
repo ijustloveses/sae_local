@@ -2,9 +2,10 @@
 
 #######################
 #
-# 第一次 2015-07-19 21:27:01 分，共计 7307 条
-# 其中，有效 7172 条，135 条被微博删除
-# 共计 498 个 tag；9655 条 post - tag 关系；
+# 第一次 2012-02-11 10:14:19 ~ 2016-07-22 10:20:18，共计 9387 条
+# 其中，有效 9128 条，其他微博被删除
+# 共计 572 个 tag；13183 条 post - tag 关系；
+# 最大 id 3999978437346286
 #
 #######################
 
@@ -12,9 +13,9 @@ import time, json
 import dbutils
 from weibo import APIClient
 
-_MIN_POST_ID = 0
-_START = 90
-_END = 189
+_MIN_POST_ID = 3999978437346286
+_START = 146
+_END = 156
 
 
 def _create_client():
@@ -25,9 +26,14 @@ def _create_client():
 # Step 1.
 def load_raw_posts(client):
     for i in range(_START, _END):
-        print 'Iteration ${} is running ...'.format(i)
-        favlist = client.favorites.get(count=50, page=i)
-        dbutils.insertRawPosts(favlist.favorites)
+        while True:
+            print 'Iteration ${} is running ...'.format(i)
+            favlist = client.favorites.get(count=50, page=i)
+            if len(favlist.favorites) > 0:
+                print "{} records get loaded".format(len(favlist.favorites))
+                dbutils.insertRawPosts(favlist.favorites)
+                break
+            time.sleep(10)
         time.sleep(21)
 
 
@@ -60,7 +66,7 @@ def uniq_raw_posts():
 
 # step 3. 从 uniq_raw_posts 表中获取数据，然后整理后放到 favorites 表中
 def parse_posts():
-    posts = dbutils.getUniqRawPosts(['id > "%s"', _MIN_POST_ID])
+    posts = dbutils.getUniqRawPosts(['id > "%s"', [_MIN_POST_ID]])
     if not posts:
         posts = []
 
@@ -149,4 +155,6 @@ if __name__ == '__main__':
 
     client = _create_client()
     client.set_access_token(token, expire)
-    load_raw_posts(client)
+    # load_raw_posts(client)
+    # uniq_raw_posts()
+    parse_posts()
