@@ -2,61 +2,36 @@
 
 #######################
 #
-# 版本3 2015-07-19 21:27:01 分，共计 7307 条
+# 第一次 2015-07-19 21:27:01 分，共计 7307 条
 # 其中，有效 7172 条，135 条被微博删除
 # 共计 498 个 tag；9655 条 post - tag 关系；
-#
-# 版本2 2015-01-26 12:28:01 分，共计 6012 条
-# 其中，有效 5891 条，121 条被微博删除
-# 共计 444 个 tag；7709 条 post - tag 关系；
-#
-# 版本1 2015-01-09 12:22:23 分，共计 5841 条
-# 其中，有效 5,721 条，120 条被微博删除
-# 共计 439 个 tag；7413 条 post - tag 关系；
 #
 #######################
 
 import time, json
 import dbutils
+from weibo import APIClient
 
-_APP_ID = '1149677487'
-_APP_SECRET = '753cfacdcca56b93318d962a9ccf7b33'
-_MIN_POST_ID = 3803238748759186  # 上次导入最大的ID，就是本次导入的最小起始ID
-
-
-def print_result(posts):
-    ids = {}
-    mintime = 2420485364
-    maxtime = 0
-    for post in posts:
-        fav = json.loads(post.content)
-
-        id = fav['status']['id']
-        ids[id] = 1
-
-        favtime = time2timestamp(fav['favorited_time'])
-        if favtime > maxtime:
-            maxtime = favtime
-        if favtime < mintime:
-            mintime = favtime
-
-    print "post num: %d,  mintime: %s,  maxtime: %s" % (len(ids), time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(mintime)), time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(maxtime)))
+_MIN_POST_ID = 0
+_START = 90
+_END = 189
 
 
-# step 1. 获取原始内容，一个请求最多50条，故此很可能会重复；放到 raw_posts 表
+def _create_client():
+    secret = dbutils.getSecret()
+    return APIClient(secret.app, secret.secret, 'http://marked.sinaapp.com/callback')
+
+
+# Step 1.
 def load_raw_posts(client):
-    for i in range(1,40):
-        favlist = client.favorites.get(count=40,page=i)
+    for i in range(_START, _END):
+        print 'Iteration ${} is running ...'.format(i)
+        favlist = client.favorites.get(count=50, page=i)
         dbutils.insertRawPosts(favlist.favorites)
-        time.sleep(10)
-
-    posts = dbutils.getRawPosts()
-    if not posts:
-        posts = []
-    print_result(posts)
+        time.sleep(21)
 
 
-# step 2. 将 raw_posts 表中的数据唯一化，并放到 uniq_raw_posts 表中
+# Step 2.
 def uniq_raw_posts():
     posts = dbutils.getRawPosts()
     if not posts:
@@ -67,25 +42,19 @@ def uniq_raw_posts():
     maxtime = 0
     for post in posts:
         fav = json.loads(post.content)
-
         id = fav['status']['id']
         if int(id) <= _MIN_POST_ID:
             continue
-
-        if not ids.has_key(id):
-            ids[id] = post.content
-        else:
+        if id in ids:
+            print "    - found dup id: {}".format(id)
             continue
-
+        ids[id] = post.content
         favtime = time2timestamp(fav['favorited_time'])
         if favtime > maxtime:
             maxtime = favtime
         if favtime < mintime:
             mintime = favtime
-
-    # 入库
     dbutils.insertUniqRawPosts(ids)
-
     print "post num: %d,  mintime: %s,  maxtime: %s" % (len(ids), time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(mintime)), time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(maxtime)))
 
 
@@ -171,3 +140,13 @@ def time2timestamp(intime):
     # like 'Tue Jan 06 03:16:04 2015'
     intime = intime[0:-10] + intime[-4:]
     return time.mktime(time.strptime(intime, "%a %b %d %H:%M:%S %Y"))
+
+
+if __name__ == '__main__':
+    import sys
+    token = sys.argv[1]
+    expire = sys.argv[2]
+
+    client = _create_client()
+    client.set_access_token(token, expire)
+    load_raw_posts(client)

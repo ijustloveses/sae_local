@@ -1,3 +1,4 @@
+create table secret (app varchar(200), secret varchar(200)) DEFAULT CHARSET=utf8;
 
 create table users (id varchar(200) not null, name varchar(200) not null, auth_token varchar(200) not null, expired_time real not null, primary key(id)) DEFAULT CHARSET=utf8;
 

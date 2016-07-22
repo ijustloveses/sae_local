@@ -69,6 +69,19 @@ def server_static():
     redirect(client.get_authorize_url())
 
 
+""" hosts 只认一级域名，故此 marked.sinaapp.com 会被理解为 ${localip}/marked
+    故此，这里添加一个 /marked，然后直接转向到 /callback 即可
+"""
+@app.route('/marked')
+def hosts_marked():
+    redirect('/callback')
+
+
+""" 这个才是真正的 callback，如果不使用本地回调地址，那么不需要上面的 /marked
+    callback 所做的，是进一步获取 access_token，并把存在 user 中
+    然后在 /getauthinfo 中展示出来
+    我们的 postsloader 脚本会使用 assess_token 来抓取微博，token 在 expire 期间内有效
+"""
 @app.route('/callback')
 def callback():
     code = request.params['code'] # request.query.code is for ver 1.3
@@ -84,11 +97,17 @@ def callback():
     dbutils.insertOrUpdateUser(user, ['id'])
 
     _make_cookie(uid, access_token, expires_in)
-    redirect('/getlist')
+    redirect('/getauthinfo')
 
 
+""" sina sae 支持局域网 callback，也就是说这个 callback 是由我来调用的，而不是新浪自己去访问
+    当时 app 和 secret 使用后面这个地址申请的，但是已经不用了，但是还是必须使用这个地址来创建 client
+    否则 新浪不认这个 app 和 secret
+    为了能访问，故此要修改 hosts，让这个地址指向本地虚拟机
+"""
 def _create_client():
-    return APIClient(_APP_ID, _APP_SECRET, 'http://marked.sinaapp.com/callback')
+    secret = dbutils.getSecret()
+    return APIClient(secret.app, secret.secret, 'http://marked.sinaapp.com/callback')
 
 
 _COOKIE = 'authuser'

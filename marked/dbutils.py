@@ -10,6 +10,10 @@ MYSQL_PASS = ''
 MYSQL_PORT = '3306'
 
 
+def getSecret():
+    db = MysqlObj(host=MYSQL_HOST, db=MYSQL_DB, user=MYSQL_USER, passwd=MYSQL_PASS, port=int(MYSQL_PORT))
+    return db.getOne('secret')
+
 def insertOrUpdateUser(user_dict, keys):
     db = MysqlObj(host=MYSQL_HOST, db=MYSQL_DB, user=MYSQL_USER, passwd=MYSQL_PASS, port=int(MYSQL_PORT))
     db.insertOrUpdate('users', user_dict, keys)
