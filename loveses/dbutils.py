@@ -24,7 +24,7 @@ def getUser(id):
 
 def getTvshow(uid):
     db = MysqlObj(host=MYSQL_HOST, db=MYSQL_DB, user=MYSQL_USER, passwd=MYSQL_PASS, port=int(MYSQL_PORT))
-    return db.getAll('tvshow', where=['uid=%s', [uid]])
+    return db.getAll('tvshow', where=['uid=%s', [uid]], order=['name'])
 
 def insertTvshow(uid, name, season, episode):
     db = MysqlObj(host=MYSQL_HOST, db=MYSQL_DB, user=MYSQL_USER, passwd=MYSQL_PASS, port=int(MYSQL_PORT))
@@ -49,7 +49,7 @@ def deleteTvshow(id):
 
 def getPasswd(uid):
     db = MysqlObj(host=MYSQL_HOST, db=MYSQL_DB, user=MYSQL_USER, passwd=MYSQL_PASS, port=int(MYSQL_PORT))
-    return db.getAll('passwd', where=['uid=%s', [uid]])
+    return db.getAll('passwd', where=['uid=%s', [uid]], order=['project'])
 
 def insertPasswd(uid, project, idno, passwd):
     db = MysqlObj(host=MYSQL_HOST, db=MYSQL_DB, user=MYSQL_USER, passwd=MYSQL_PASS, port=int(MYSQL_PORT))
