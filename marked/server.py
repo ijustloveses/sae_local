@@ -89,11 +89,13 @@ def callback():
     r = client.request_access_token(code)
 
     access_token, expires_in, uid = r.access_token, r.expires_in, r.uid
+    print "access_token: {}, expires_in: {}, uid: {}".format(access_token, expires_in, uid)
     client.set_access_token(access_token, expires_in)
 
     u = client.users.show.get(uid=uid)
     user = {'id': uid,'name': u.screen_name, 'auth_token': access_token, 'expired_time':expires_in}
 
+    print user
     dbutils.insertOrUpdateUser(user, ['id'])
 
     _make_cookie(uid, access_token, expires_in)

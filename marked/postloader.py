@@ -2,10 +2,10 @@
 
 #######################
 #
-# 第一次 2012-02-11 10:14:19 ~ 2016-07-22 10:20:18，共计 9387 条
-# 其中，有效 9128 条，其他微博被删除
-# 共计 572 个 tag；13183 条 post - tag 关系；
-# 最大 id 3999978437346286
+# 第一次 2012-02-11 10:14:19 ~ 2017-02-03 07:34:03，共计 7291 条
+# 其中，有效 7108 条，其他 183 条微博被删除
+# 共计 534 个 tag；9993 条 post - tag 关系；
+# 最大 id 4070962070667062
 #
 #######################
 
@@ -13,9 +13,9 @@ import time, json
 import dbutils
 from weibo import APIClient
 
-_MIN_POST_ID = 3999978437346286
-_START = 146
-_END = 156
+_MIN_POST_ID = 0
+_START = 1
+_END = 147
 
 
 def _create_client():
@@ -139,6 +139,7 @@ def parse_posts():
     dbutils.insertPosts(favorites)
     dbutils.insertTags(tags)
     dbutils.insertPostsTags(posts_tags)
+    print "Posts deleted: {}".format(deleted)
 
 
 # intime like 'Tue Jan 06 03:16:04 +0800 2015'
