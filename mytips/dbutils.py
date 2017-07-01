@@ -5,7 +5,7 @@ from MysqlObj import *
 MYSQL_HOST = '127.0.0.1'
 MYSQL_DB = 'sae_mytips'
 MYSQL_USER = 'root'
-MYSQL_PASS = ''
+MYSQL_PASS = '123456'
 MYSQL_PORT = '3306'
 
 
