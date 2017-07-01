@@ -110,7 +110,7 @@ def server_static():
 
 @app.route('/callback')
 def callback():
-    uid = '1'
+    uid = '138134192311'
     access_token = 'access_token'
     expires_in = int(time.mktime(time.localtime())) + 3600
 
