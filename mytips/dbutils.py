@@ -5,7 +5,7 @@ from Sqlite3Obj import *
 
 def insertOrUpdateUser(user_dict, keys):
     db =Sqlite3Obj("sae_mytips.db")
-    db.insertOrUpdate('users', user_dict, keys)
+    db.replace('users', user_dict)
 
 def getUser(id):
     db =Sqlite3Obj("sae_mytips.db")

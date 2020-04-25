@@ -116,6 +116,15 @@ class Sqlite3Obj:
         self.commit()
         return res
 
+    def replace(self, table, data):
+        query = self._insert_format(data)
+
+        sql = "REPLACE INTO `%s` (%s) VALUES(%s)" % (table, query[0], query[1])
+
+        res = self.query(sql, data.values())
+        self.commit()
+        return res
+
     def _update_format(self, data):
         """
             data = {"k1":"v1", "k2":"v2"}
@@ -147,8 +156,9 @@ class Sqlite3Obj:
             del data[k]
 
         update = self._update_format(data)
+        dupkeys = ','.join(keys)
 
-        sql = "INSERT INTO `%s` (%s) VALUES(%s) ON DUPLICATE KEY UPDATE %s" % (table, insert[0], insert[1], update)
+        sql = "INSERT INTO `%s` (%s) VALUES(%s) ON CONFLICT(%s) DO UPDATE SET %s" % (table, insert[0], insert[1], dupkeys, update)
 
         res = self.query(sql, insert_data.values() + data.values()).rowcount
         self.commit()
