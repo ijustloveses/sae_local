@@ -35,7 +35,10 @@ class Sqlite3Obj:
     # return cur
     def query(self, sql, params=None):
         try:
-            self.cur.execute(sql, params)
+            if params is None:
+                self.cur.execute(sql)
+            else:
+                self.cur.execute(sql, params)
         except:
             print("Query Failed: {}".format(sql))
             raise

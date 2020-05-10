@@ -35,7 +35,7 @@ def addtvshow():
     noname = 'FAILED_TO_FIND_NAME'
     noseason = -1
     if u:
-        name = request.forms.get('name', default=noname)
+        name = request.forms.get('name', default=noname).decode('utf-8')
         season = request.forms.get('season', default=noseason)
         episode = request.forms.get('episode', default=1)
         if name != noname and season != noseason:
@@ -96,9 +96,9 @@ def pwadd():
     noidno = 'FAILED_TO_FIND_IDNO'
     nopass = 'FAILED_TO_FIND_PASS'
     if u:
-        project = request.forms.get('project', default=noproj)
-        idno = request.forms.get('idno', default=noidno)
-        passwd = request.forms.get('passwd', default=nopass)
+        project = request.forms.get('project', default=noproj).decode('utf-8')
+        idno = request.forms.get('idno', default=noidno).decode('utf-8')
+        passwd = request.forms.get('passwd', default=nopass).decode('utf-8')
         if project != noproj and idno != noidno and passwd != nopass:
             dbutils.insertPasswd(u.id, project, idno, passwd)
 

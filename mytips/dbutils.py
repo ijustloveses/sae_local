@@ -104,7 +104,8 @@ def getPostsCountByTag(tid, uid):
 
 def getAllTagsCounts(uid):
     db =Sqlite3Obj("sae_mytips.db")
-    cur = db.query('select a.tid, a.cnt from (select tid, count(*) as cnt from posts_tags where uid = "%s" group by tid) a where a.cnt > 1' % uid)
+    sql = 'select a.tid, a.cnt from (select tid, count(*) as cnt from posts_tags where uid = "%s" group by tid) a where a.cnt > 1' % uid
+    cur = db.query(sql)
     result = cur.fetchall()
     tcnt = {}
     for tid, cnt in result:

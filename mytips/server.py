@@ -55,8 +55,8 @@ def addtip():
     if not u:
         redirect('/')
 
-    text = request.forms.get('tip').strip()
-    tags = request.forms.get('tags').strip().split()
+    text = request.forms.get('tip').decode('utf-8').strip()
+    tags = request.forms.get('tags').decode('utf-8').strip().split()
     if text:
         pid = dbutils.insertPost({'post_text': text, 'created_at': time.strftime('%Y-%m-%d %H:%M:%S'), 'uid': u.id})
         tagids = dbutils.insertTags(tags)
@@ -178,4 +178,4 @@ def pager(totalnum):
 
 
 if __name__ == '__main__':
-    run(host='0.0.0.0', port=80, reloader=False)
+    run(host='0.0.0.0', port=8080, reloader=False)
